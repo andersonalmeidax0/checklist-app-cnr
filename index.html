@@ -37,7 +37,7 @@
           <table id="bookTable" class="table table-bordered table-condensed table-striped">
             <thead>
               <tr>
-                <th>TÃ­tulo do Livro</th>
+                <th>Titulo do Livro</th>
                 <th>Autor</th>
                 <th>Editora</th>
                 <th>Editar</th>
@@ -83,20 +83,33 @@
     <script src="js/bootstrap.min.js"></script>
     <script type="text/javascript">
 
+    /////
+    //Iiniciaticacao
+    /////
+      
     //esconde div de forms
     $('#insertButton').show();$('#tableBooks').show();$('#formBooks').hide();
 
-      // PrÃ³ximo ID para adicionar um novo livro
-      var _nextId = 1;
-      // ID do livro que estÃ¡ sendo editado
-      var _activeId = 0;
+    // Proximo ID para adicionar um novo livro
+    var _nextId = 1;
+    // ID do livro que esta sendo editado
+    var _activeId = 0;
 
+      //////
+      // limpa form 
+      // contexto: htmlform
+      //////
       function formClear(){
         $("#book_title").val("");
         $("#book_author").val("");
         $("#book_publisher").val("");
       }
-
+     
+      //////
+      // PRE FORM
+      // gera html para um determinado row
+      // contexto htmlform
+      //////
       function bookBuildTableRow(id){
         var row = "<tr>" +
           "<td>" + $("#book_title").val() + "</td>" +
@@ -123,8 +136,13 @@
         return row;
       }
 
+      //////
+      // FORM OK
+      // adiciona o html row to table
+      // contexot: htmlform
+      //////
       function bookAddToTable(){
-        // Primeiro verifica se a tag <tbody> existe. Adiciona um caso nÃ£o exista
+        // Primeiro verifica se a tag <tbody> existe. Adiciona um caso nao exista
         if ($("#bookTable tbody").length == 0){
           $("#bookTable").append("<tbody></tbody>");
         }
@@ -136,13 +154,22 @@
         _nextId += 1;
       }
 
+      //////
+      // TABLE DELETE
+      // remove o html
+      // contexto: chamado no onClick do botao de delete da row
+      //////
       function bookDelete(button_delete){
         $(button_delete).parents("tr").remove();
       }
 
+      //////
+      // TABLE PREP EDIT
+      // exibe um book para alteracao
+      // contexto: chamado no onClick do botao de edit da row
+      // edita com base no que esta no html da table
+      //////
       function bookDisplay(button_edit){
-
-        $('#insertButton').hide();$('#tableBooks').hide();$('#formBooks').show();
 
         var row = $(button_edit).parents("tr");
         var cols = row.children("td");
@@ -153,10 +180,17 @@
         $("#book_author").val($(cols[1]).text());
         $("#book_publisher").val($(cols[2]).text());
 
-        // Mudar o texto do BotÃ£o
-        $("#updateButton").text("Actualizar");
+        // Muda UI
+        $('#insertButton').hide();
+        $('#tableBooks').hide();
+        $('#formBooks').show();
+        $("#updateButton").text("Atualizar");
       }
 
+      //////
+      // (UTL) chamano apos OK button
+      // atualiza a tabela htnml
+      //////
       function bookUpdateInTable(id){
         // Encontra o livro na tabela
         var row = $("#bookTable button[data-id='" + id + "']").parents("tr")[0];
@@ -177,6 +211,11 @@
 
       }
 
+      //////
+      // FORM:  OK BUTTON
+      // atualiza book na tabela ou adiciona na tabela
+      // contexto: chamado no onClick do botao de update da row
+      //////
       function bookUpdate(){
         if ($("#book_title").val() != null && $("#book_title").val() != ''){
           if ($("#updateButton").text() == "Atualizar"){
