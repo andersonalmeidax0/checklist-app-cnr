@@ -87,7 +87,7 @@
     //Iiniciaticacao
     /////
       
-    //esconde div de forms
+    //esconde div de forms e mostra table
     $('#insertButton').show();$('#tableBooks').show();$('#formBooks').hide();
 
     // Proximo ID para adicionar um novo livro
@@ -95,8 +95,57 @@
     // ID do livro que esta sendo editado
     var _activeId = 0;
 
+      
       //////
-      // limpa form 
+      // EVT_ TABLE PREP EDIT
+      // exibe um book para alteracao
+      // contexto: chamado no onClick do botao de edit da row
+      // edita com base no que esta no html da table
+      //////
+      function bookDisplay(button_edit){
+
+        var row = $(button_edit).parents("tr");
+        var cols = row.children("td");
+
+        _activeId = $($(cols[3]).children("button")[0]).data("id");
+
+        $("#book_title").val($(cols[0]).text());
+        $("#book_author").val($(cols[1]).text());
+        $("#book_publisher").val($(cols[2]).text());
+
+        // Muda UI
+        $('#insertButton').hide();
+        $('#tableBooks').hide();
+        $('#formBooks').show();
+        $("#updateButton").text("Atualizar");
+      }
+
+      //////
+      // EVT FORM:  OK BUTTON
+      // atualiza book na tabela ou adiciona na tabela
+      // contexto: chamado no onClick do botao de update da row
+      //////
+      function bookUpdate(){
+        if ($("#book_title").val() != null && $("#book_title").val() != ''){
+          if ($("#updateButton").text() == "Atualizar"){
+            bookUpdateInTable(_activeId);
+          } else {
+            // Adiciona o Livro na Tabela
+            bookAddToTable();
+          }
+
+          // Limpa o formulÃ¡rio
+          formClear();
+
+          // MantÃ©m o focu no campo TÃ­tulo
+          $("#book_title").focus();
+
+          $('#insertButton').show();$('#tableBooks').show();$('#formBooks').hide();
+        }
+      }
+
+      //////
+      // limpa form  UTL
       // contexto: htmlform
       //////
       function formClear(){
@@ -104,9 +153,53 @@
         $("#book_author").val("");
         $("#book_publisher").val("");
       }
-     
+
+      
       //////
-      // PRE FORM
+      // (UTL) chamano apos OK button
+      // atualiza a tabela htnml
+      //////
+      function bookUpdateInTable(id){
+        // Encontra o livro na tabela
+        var row = $("#bookTable button[data-id='" + id + "']").parents("tr")[0];
+
+        // Adiciona a linha modifica na tabela
+        $(row).after(bookBuildTableRow());
+
+        // Remover a linha antiga
+        $(row).remove();
+
+        // Limpar o formulÃ¡rio
+        formClear();
+
+        // Mudar o texto do BotÃ£o
+        $("#updateButton").text("Adicionar Livro");
+        //showhide divs 
+         $('#insertButton').show();$('#tableBooks').show();$('#formBooks').hide();
+
+      }
+
+      //////
+      // FORM OK (UTL)
+      // adiciona o html row to table
+      // contexot: htmlform
+      //////
+      function bookAddToTable(){
+        // Primeiro verifica se a tag <tbody> existe. Adiciona um caso nao exista
+        if ($("#bookTable tbody").length == 0){
+          $("#bookTable").append("<tbody></tbody>");
+        }
+
+        // Adiciona Livro na Tabela
+        $("#bookTable tbody").append(bookBuildTableRow(_nextId));
+
+        // Incrementamos o nextId
+        _nextId += 1;
+      }
+
+      
+      //////
+      // PRE FORM (UTL)
       // gera html para um determinado row
       // contexto htmlform
       //////
@@ -137,25 +230,7 @@
       }
 
       //////
-      // FORM OK
-      // adiciona o html row to table
-      // contexot: htmlform
-      //////
-      function bookAddToTable(){
-        // Primeiro verifica se a tag <tbody> existe. Adiciona um caso nao exista
-        if ($("#bookTable tbody").length == 0){
-          $("#bookTable").append("<tbody></tbody>");
-        }
-
-        // Adiciona Livro na Tabela
-        $("#bookTable tbody").append(bookBuildTableRow(_nextId));
-
-        // Incrementamos o nextId
-        _nextId += 1;
-      }
-
-      //////
-      // TABLE DELETE
+      // EVT TABLE DELETE (UTL)
       // remove o html
       // contexto: chamado no onClick do botao de delete da row
       //////
@@ -163,78 +238,7 @@
         $(button_delete).parents("tr").remove();
       }
 
-      //////
-      // TABLE PREP EDIT
-      // exibe um book para alteracao
-      // contexto: chamado no onClick do botao de edit da row
-      // edita com base no que esta no html da table
-      //////
-      function bookDisplay(button_edit){
-
-        var row = $(button_edit).parents("tr");
-        var cols = row.children("td");
-
-        _activeId = $($(cols[3]).children("button")[0]).data("id");
-
-        $("#book_title").val($(cols[0]).text());
-        $("#book_author").val($(cols[1]).text());
-        $("#book_publisher").val($(cols[2]).text());
-
-        // Muda UI
-        $('#insertButton').hide();
-        $('#tableBooks').hide();
-        $('#formBooks').show();
-        $("#updateButton").text("Atualizar");
-      }
-
-      //////
-      // (UTL) chamano apos OK button
-      // atualiza a tabela htnml
-      //////
-      function bookUpdateInTable(id){
-        // Encontra o livro na tabela
-        var row = $("#bookTable button[data-id='" + id + "']").parents("tr")[0];
-
-        // Adiciona a linha modifica na tabela
-        $(row).after(bookBuildTableRow());
-
-        // Remover a linha antiga
-        $(row).remove();
-
-        // Limpar o formulÃ¡rio
-        formClear();
-
-        // Mudar o texto do BotÃ£o
-        $("#updateButton").text("Adicionar Livro");
-        //showhide divs 
-         $('#insertButton').show();$('#tableBooks').show();$('#formBooks').hide();
-
-      }
-
-      //////
-      // FORM:  OK BUTTON
-      // atualiza book na tabela ou adiciona na tabela
-      // contexto: chamado no onClick do botao de update da row
-      //////
-      function bookUpdate(){
-        if ($("#book_title").val() != null && $("#book_title").val() != ''){
-          if ($("#updateButton").text() == "Atualizar"){
-            bookUpdateInTable(_activeId);
-          } else {
-            // Adiciona o Livro na Tabela
-            bookAddToTable();
-          }
-
-          // Limpa o formulÃ¡rio
-          formClear();
-
-          // MantÃ©m o focu no campo TÃ­tulo
-          $("#book_title").focus();
-
-          $('#insertButton').show();$('#tableBooks').show();$('#formBooks').hide();
-        }
-      }
-
+      
     </script>
   </body>
 </html> 
